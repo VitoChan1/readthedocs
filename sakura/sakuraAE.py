@@ -1,3 +1,6 @@
+"""
+Generic framework of SAKURA
+"""
 import argparse
 import json
 import os
