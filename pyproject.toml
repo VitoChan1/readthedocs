@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "sakura"
+name = "lumache"
 authors = [
     {name="Zhenghao ZHANG", email="adamzhang@me.com"},
     {name="Jiamin CHEN", email="vitochanjm@gmail.com"},
