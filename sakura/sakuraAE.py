@@ -1,6 +1,7 @@
 """
 Lumache - Python library for cooks and food lovers.
 """
+from typing import Optional
 
 __version__ = "0.1.0"
 
