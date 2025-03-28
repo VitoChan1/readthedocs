@@ -6,13 +6,17 @@ __version__ = "0.1.0"
 
 
 class InvalidKindError(Exception):
-    """Raised if the kind is invalid."""
+    """
+    Raised if the kind is invalid.
+        testing indentation.
+    """
     pass
 
 
 def get_random_ingredients(kind=None):
     """
     Return a list of random ingredients as strings.
+        *how should this work
 
     :param kind: Optional "kind" of ingredients.
     :type kind: list[str] or None
