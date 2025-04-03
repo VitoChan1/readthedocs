@@ -10,6 +10,10 @@ class InvalidKindError(Exception):
     """
     Raised if the kind is invalid.
         testing indentation.
+    
+    gene_csv:
+        * Assuming rows are genes, columns are samples (or cells)
+            *testing
     """
     pass
 
