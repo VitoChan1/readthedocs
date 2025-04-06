@@ -13,7 +13,10 @@ class InvalidKindError(Exception):
     .. note::
         For more details of the transformations, see :func:`utils.data_transformations`.
 
-        <gene_meta> example::
+        <gene_meta> example:
+        
+        .. code-block::
+        
             {
                 'all': {
                     'gene_list': "*",
