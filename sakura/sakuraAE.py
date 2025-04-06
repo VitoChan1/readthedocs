@@ -14,7 +14,7 @@ class InvalidKindError(Exception):
         For more details of the transformations, see :func:`utils.data_transformations`.
 
         <gene_meta> example:
-        ```
+        .. code_block::
             {
                 'all': {
                     'gene_list': "*",
@@ -24,7 +24,7 @@ class InvalidKindError(Exception):
                     }]
                 }
             }
-        ```
+            
         <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
 
         <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
