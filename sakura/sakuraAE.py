@@ -10,16 +10,25 @@ class InvalidKindError(Exception):
     """
     Raised if the kind is invalid.
         testing indentation.
-    **tesitng**  
-    for line change\n
-    how it should work
-    
-    or not  
-    or how to elegantly
-    
-    gene_csv:
-        * Assuming rows are genes, columns are samples (or cells)
-            *testing
+    .. note::
+        For more details of the transformations, see :func:`utils.data_transformations`.
+
+        <gene_meta> example:
+        ```
+            {
+                'all': {
+                    'gene_list': "*",
+                    'pre_procedure': [],
+                    'post_procedure': [{
+                    'type': "ToTensor"
+                    }]
+                }
+            }
+        ```
+        <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
+
+        <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
+        improve the performance of reading a large file.
     """
     pass
 
