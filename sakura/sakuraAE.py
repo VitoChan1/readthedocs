@@ -30,7 +30,7 @@ class InvalidKindError(Exception):
         <detach_from> options:
             
         - 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
-        - When config is None, default 3 hidden layers with structure:\
+        - When config is None, default 3 hidden layers with structure:
             Input → Linear → CELU → Linear → CELU → Linear → Output
         - 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
         
