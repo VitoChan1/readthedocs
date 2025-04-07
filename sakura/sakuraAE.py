@@ -27,10 +27,11 @@ class InvalidKindError(Exception):
                 }
             }
             
-        <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
-
-        <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
-        improve the performance of reading a large file.
+        <detach_from> options:
+            - 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
+            - 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
+        
+        <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.        
     """
     pass
 
