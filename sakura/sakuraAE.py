@@ -30,7 +30,7 @@ class InvalidKindError(Exception):
         <detach_from> options:
             
         - 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
-        - When config is None, default 3 hidden layers with structure:\\
+        - When config is None, default 3 hidden layers with structure:
           Input → Linear → CELU → Linear → CELU → Linear → Output
         - 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
         
@@ -45,6 +45,7 @@ def get_random_ingredients(kind:Optional[list[str]]=None):
         *testing
     
     :param kind: (Optional[list[str]]) Optional "kind" of ingredients.
+    :param input_ (input_): Input tensor of shape (N, *).
     :raise lumache.InvalidKindError: If the kind is invalid.
     :return: The ingredients list.
     :rtype: list[str]
