@@ -45,7 +45,8 @@ def get_random_ingredients(kind:Optional[list[str]]=None):
         *testing
     
     :param kind: (Optional[list[str]]) Optional "kind" of ingredients.
-    :param input_ (input_): Input tensor of shape (N, *).
+    :param `input_`: Input tensor of shape (N, *).
+    :type `input_`:torch.Tensor
     :raise lumache.InvalidKindError: If the kind is invalid.
     :return: The ingredients list.
     :rtype: list[str]
