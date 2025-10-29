@@ -20,3 +20,4 @@ Contents
 
    usage
    api
+   ./tutorials/tutorial_index
