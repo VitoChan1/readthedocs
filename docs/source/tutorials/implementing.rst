@@ -42,8 +42,7 @@ for simplicity, and then integrate corresponding cell type information into Seur
     seurat_filtered <- seurat_object[, cells_to_keep]
 
 .. note::
-    From 10x, cell type annotation (https://www.10xgenomics.com/support/software/cell-ranger/latest/algorithms-overview/cr-cell-annotation-algorithm) is currently in beta and relies on the Chan Zuckerberg CELL by GENE reference.
-    As this reference is community-driven it may not cover all tissue types, which could impact your results.
+    From 10xGenomics, cell type annotation (https://www.10xgenomics.com/support/software/cell-ranger/latest/algorithms-overview/cr-cell-annotation-algorithm) is currently in beta and relies on the Chan Zuckerberg CELL by GENE reference. As this reference is community-driven it may not cover all tissue types, which could impact the results.
 
 Normalization and Feature Selection
 -----------------------------------
@@ -60,10 +59,10 @@ Data Export
 -----------
 After subsetting 10k highly variable genes, we export key data components as input data of SAKURA:
 
-  - ``genenames_hv10k.csv``: List of 10k highly variable gene names
-  - ``cell_names.csv``: Filtered cell barcodes
-  - ``pheno_df.csv``: Cell metadata including cell type annotations
-  - ``lognorm_hv10k.mtx``: Normalized expression matrix in Matrix Market format
+    - ``genenames_hv10k.csv``: List of 10k highly variable gene names
+    - ``cell_names.csv``: Filtered cell barcodes
+    - ``pheno_df.csv``: Cell metadata including cell type annotations
+    - ``lognorm_hv10k.mtx``: Normalized expression matrix in Matrix Market format
 
 .. code-block:: r
 
@@ -93,14 +92,14 @@ Basic Configuration
     "rnd_seed": 3407,
 
 **Parameters:**
-- ``remarks``: User comments or notes about this configuration
-- ``log_path``: Directory path for storing training logs and outputs
-- ``reproducible``: When set to "True", ensures reproducible results using the specified random seed
-- ``rnd_seed``: Random seed (3407) for reproducible random number generation
+    - ``remarks``: User comments or notes about this configuration
+    - ``log_path``: Directory path for storing training logs and outputs
+    - ``reproducible``: When set to "True", ensures reproducible results using the specified random seed
+    - ``rnd_seed``: Random seed (3407) for reproducible random number generation
 
 Dataset Configuration
 ,,,,,,,,,,,,,,,,,,,,,,
-**Related API:** :class:`sakura.dataset`
+**Related API:** : module:`sakura.dataset`
 
 .. code-block:: json
 
@@ -121,20 +120,24 @@ Dataset Configuration
   },
 
 **Parameters:**
-- ``type``: Data format type ("rna_count_sparse" for PBMC5k sparse RNA count matrices)
-- ``gene_expr_MM_path``: Path to normalized gene expression matrix in Matrix Market format
-- ``gene_name_csv_path``: Path to CSV file containing gene names
-- ``cell_name_csv_path``: Path to CSV file containing cell barcodes/identifiers
-- ``pheno_csv_path``: Path to CSV file containing cell phenotype metadata
-- ``pheno_df_dtype``: Data types for phenotype columns (Batch and cell type annotations as strings)
-- ``pheno_df_na_filter``: Whether to filter out NA values in phenotype data
-- ``expr_mat_pre_slice``: Whether the expression matrix is pre-sliced
-- ``signature_config_path``: Path to signature configuration file defining signature side task
-- ``selected_signature``: Name list of signatures to use (here, we use 'CD8A', 'CD8B' and name them 'cd8')
+
+    - ``type``: Data format type ("rna_count_sparse" for PBMC5k sparse RNA count matrices)
+    - ``gene_expr_MM_path``: Path to normalized gene expression matrix in Matrix Market format
+    - ``gene_name_csv_path``: Path to CSV file containing gene names
+    - ``cell_name_csv_path``: Path to CSV file containing cell barcodes/identifiers
+    - ``pheno_csv_path``: Path to CSV file containing cell phenotype metadata
+    - ``pheno_df_dtype``: Data types for phenotype columns (Batch and cell type annotations as strings)
+    - ``pheno_df_na_filter``: Whether to filter out NA values in phenotype data
+    - ``expr_mat_pre_slice``: Whether the expression matrix is pre-sliced
+    - ``signature_config_path``: Path to signature configuration file defining signature side task
+    - ``selected_signature``: Name list of signatures to use (here, we use 'CD8A', 'CD8B' and name them 'cd8')
+
+.. note::
+    Similarly, users can include ``pheno_config_path`` and ``selected_pheno`` 
 
 Hardware and Data Splitting
 ---------------------------
-**Related API:** :class:`sakura.utils.data_splitter`
+**Related API:** : class:`sakura.utils.data_splitter`
 
 .. code-block:: json
 
