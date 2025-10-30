@@ -84,12 +84,15 @@ This section demonstrates how to run SAKURA using the provided example dataset P
     - ``./tests/pbmc5k/config.json``
     - ``./tests/pbmc5k/signature_config.json``
 
+Since we have installed SAKURA in :doc:`installation`, we can now run SAKURA as a python module:
+
 .. code-block:: console
 
-    (sakura) user:~/.../SAKURA/$ python -m sakura -c ./test/pbmc5k/config.json --verbose True &> ./test/pbmc5k/console.log
+    (sakura) ~/.../SAKURA/$ python -m sakura -c ./test/pbmc5k/config.json --verbose True &> ./test/pbmc5k/console.log
 
 **Command Breakdown:**
 
+    - ``-c ./test/pbmc5k/config.json``: Specifies the path to configuration file
     - ``--verbose True``: Enables verbose logging for detailed progress information
     - ``&> ./test/pbmc5k/console.log``: Redirects both standard output and error to log file
 
@@ -508,6 +511,7 @@ We perform standard clustering and UMAP pipeline using Seurat on SAKURA cell emb
 Also, we generate comparative visualizations (UMAP) colored by Cell Ranger coarse cell type annotations and SAKURA cluster identities.
 
 .. code-block:: r
+
     data <- read.csv(paste0(path, '.csv'), row.names = 1)
     embedding_data <- data[,1:50]
     seurat.hv10k[["sakura"]] <- CreateDimReducObject(embeddings = embedding_data %>% as.matrix, key = "sakura_", assay = DefaultAssay(seurat.hv10k))
@@ -536,3 +540,4 @@ We load the pre-computed UMAP coordinates and cluster assignments from Cell Rang
     plot3 <- DimPlot(seurat.hv10k, group.by = "coarse_cell_type", label=TRUE)
     plot4 <- DimPlot(seurat.hv10k, label=TRUE)
     plot3+plot4
+
