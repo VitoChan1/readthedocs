@@ -139,9 +139,9 @@ Related API: :class:`sakura.dataset`
 
 .. note::
     Similarly, users can include optional phenotype learning task configuration JSON file with
-    ``pheno_meta_path`` and ``selected_pheno``. See `Signature Configuration <signature_config_>` for more details.
+    ``pheno_meta_path`` and ``selected_pheno``. See signature_config_ for more details.
 
-.. _datasplitting: https://vtreadthedocs.readthedocs.io/en/latest/tutorials/implementing.html#hardware-and-data-splitting
+.. _data_splitting:
 
 Hardware and Data Splitting
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -277,7 +277,7 @@ The ``story`` section defines the complete training workflow:
     - ``main_lat_reconstruct``: Main autoencoder reconstruction training
     - ``batch_size``: 100 cells per batch
     - ``cd8_focused``: Signature-guided training, use cd8 related signature to guide latent space organization
-        and applies losses and regularizations according to `Signature Configuration <signature_config_>`
+        and applies losses and regularizations according to signature_config_.
     - ``prog_loss_weight_mode``: "epoch_end" controls loss weight updated at the end of each epoch
 
 .. note::
@@ -333,7 +333,7 @@ Perform tests on different data splits and save latent representations according
     ]
 
 
-.. _signature_config: https://vtreadthedocs.readthedocs.io/en/latest/tutorials/implementing.html#signature-configuration
+.. _signature_config:
 
 Signature Configuration
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -400,7 +400,7 @@ Related API: :func:`sakura.sakuraAE.sakuraAE.generate_splits()` and :class:`saku
     - ``type``: ``"none"`` - No special splitting for this signature
 
 .. note::
-    See also `Data Splitting <datasplitting_>` for similar format.
+    See also data_splitting_ for similar format.
 
 Signature Model Architecture
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -446,12 +446,12 @@ and loss/regularization settings - :class:`sakura.model_controllers.extractor_co
 
 **Signature Model Configuration:**
 
-    - ``type``: ``"FCRegressor"`` - Fully Connected Regression model;
-    Alternative: ``"FCClassifier"`` for classification tasks
+    - ``type``: ``"FCRegressor"`` - Fully Connected Regression model; 
+Alternative: ``"FCClassifier"`` for classification tasks
     - ``hidden_neurons``: 5 - Number of neurons in hidden layer
     - ``attach``: ``"True"`` - Connect this model to the main network
-    - ``attach_to``: ``"main_lat"`` - Connect to the main latent space,
-        allowing signature model to influence main representation learning
+    - ``attach_to``: ``"main_lat"`` - Connect to the main latent space, 
+allowing signature model to influence main representation learning
 
 
 
