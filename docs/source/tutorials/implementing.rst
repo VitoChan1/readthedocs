@@ -42,7 +42,8 @@ for simplicity, and then integrate corresponding cell type information into Seur
     seurat_filtered <- seurat_object[, cells_to_keep]
 
 .. note::
-    From 10xGenomics, cell type annotation (https://www.10xgenomics.com/support/software/cell-ranger/latest/algorithms-overview/cr-cell-annotation-algorithm) is currently in beta and relies on the Chan Zuckerberg CELL by GENE reference. As this reference is community-driven it may not cover all tissue types, which could impact the results.
+    From 10x, cell type annotation (https://www.10xgenomics.com/support/software/cell-ranger/latest/algorithms-overview/cr-cell-annotation-algorithm) is currently in beta and relies on the Chan Zuckerberg CELL by GENE reference.
+    As this reference is community-driven it may not cover all tissue types, which could impact your results.
 
 Normalization and Feature Selection
 -----------------------------------
@@ -59,10 +60,10 @@ Data Export
 -----------
 After subsetting 10k highly variable genes, we export key data components as input data of SAKURA:
 
-    - ``genenames_hv10k.csv``: List of 10k highly variable gene names
-    - ``cell_names.csv``: Filtered cell barcodes
-    - ``pheno_df.csv``: Cell metadata including cell type annotations
-    - ``lognorm_hv10k.mtx``: Normalized expression matrix in Matrix Market format
+  - ``genenames_hv10k.csv``: List of 10k highly variable gene names
+  - ``cell_names.csv``: Filtered cell barcodes
+  - ``pheno_df.csv``: Cell metadata including cell type annotations
+  - ``lognorm_hv10k.mtx``: Normalized expression matrix in Matrix Market format
 
 .. code-block:: r
 
@@ -78,7 +79,12 @@ which can be substantially improved with GPUs.
 Running SAKURA with the example dataset
 -----------------------------------------
 SAKURA uses a comprehensive JSON configuration file to control all aspects of the training process.
-Below we break down each section of the example configuration file ().
+Below we break down each section of the example configuration files:
+
+    - ``./pbmc5k/config.json ``
+    - ``./pbmc5k/signature_config.json ``
+
+.. _./pbmc5k/config.json:
 
 Basic Configuration
 ,,,,,,,,,,,,,,,,,,,,,,
@@ -92,6 +98,7 @@ Basic Configuration
     "rnd_seed": 3407,
 
 **Parameters:**
+
     - ``remarks``: User comments or notes about this configuration
     - ``log_path``: Directory path for storing training logs and outputs
     - ``reproducible``: When set to "True", ensures reproducible results using the specified random seed
@@ -99,7 +106,7 @@ Basic Configuration
 
 Dataset Configuration
 ,,,,,,,,,,,,,,,,,,,,,,
-**Related API:** : module:`sakura.dataset`
+Related API: :class:`sakura.dataset`
 
 .. code-block:: json
 
@@ -129,15 +136,16 @@ Dataset Configuration
     - ``pheno_df_dtype``: Data types for phenotype columns (Batch and cell type annotations as strings)
     - ``pheno_df_na_filter``: Whether to filter out NA values in phenotype data
     - ``expr_mat_pre_slice``: Whether the expression matrix is pre-sliced
-    - ``signature_config_path``: Path to signature configuration file defining signature side task
+    - ``signature_config_path``: Path to signature configuration file defining signature learning task
     - ``selected_signature``: Name list of signatures to use (here, we use 'CD8A', 'CD8B' and name them 'cd8')
 
 .. note::
-    Similarly, users can include ``pheno_config_path`` and ``selected_pheno`` 
+    Similarly, users can include optional phenotype learning task configuration JSON file with
+    ``pheno_meta_path`` and ``selected_pheno``. See `Signature Configuration <./pbmc5k/signature_config.json>` for more details.
 
 Hardware and Data Splitting
----------------------------
-**Related API:** : class:`sakura.utils.data_splitter`
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Related API: :class:`sakura.utils.data_splitter.DataSplitter`
 
 .. code-block:: json
 
@@ -155,7 +163,74 @@ Hardware and Data Splitting
 - ``train_dec``: Training set ratio denominator (5 = 80% training, 20% testing)
 - ``seed``: Random seed for reproducible data splitting
 
+Model Architecture
+,,,,,,,,,,,,,,,,,,,,,,
+Related API: structure settings - :class:`sakura.models.extractor.Extractor` and loss/regularization settings - :class:`sakura.model_controllers.extractor_controller.ExtractorController`
 
+.. code-block:: json
+
+  "main_latent": {
+    "encoder_neurons": 200,
+    "decoder_neurons": 200,
+    "latent_dim": 50,
+    "loss": {
+      "L2": {
+        "type": "MSE",
+        "init_weight": 1.0,
+        "progressive_const": 1.0,
+        "progressive_start_epoch": 100
+      },
+      "L1": {
+        "type": "L1",
+        "init_weight": 1.0,
+        "progressive_const": 1.0,
+        "progressive_start_epoch": 100
+      }
+    },
+    "regularization": {
+      "uniform_shape_unsupervised": {
+        "type": "SW2_uniform",
+        "init_weight": 0.0001,
+        "progressive_const": 1.01,
+        "progressive_start_epoch": 1,
+        "max_weight": 1.0,
+        "SW2_num_projections": 50,
+        "uniform_low": -10,
+        "uniform_high": 10
+      }
+    }
+  },
+
+**Parameters:**
+
+    - ``encoder_neurons``: Number of neurons in encoder hidden layers (200)
+    - ``decoder_neurons``: Number of neurons in decoder hidden layers (200)
+    - ``latent_dim``: Dimensionality of the latent space (50)
+    - ``loss``: Reconstruction loss configuration
+    - ``L2``: Mean Squared Error loss with progressive weighting
+    - ``L1``: L1 loss for robust reconstruction
+    - ``regularization``: Regularization terms to shape the latent space
+    - ``uniform_shape_unsupervised``: Sliced Wasserstein distance regularization to enforce uniform distribution
+
+
+Optimizer Configuration
+,,,,,,,,,,,,,,,,,,,,,,,,
+Related API: structure settings - :func::class:`sakura.model_controllers.extractor_controller.ExtractorController.setup_optimize()`
+
+.. code-block:: json
+
+  "optimizer": {
+    "type": "RMSProp",
+    "RMSProp_lr": 0.001,
+    "RMSProp_alpha": 0.9
+  },
+
+**Parameters:**
+    - ``type``: Optimization algorithm ("RMSProp")
+    - ``RMSProp_lr``: Learning rate (0.001)
+    - ``RMSProp_alpha``: Smoothing constant for RMSProp (0.9)
+
+.. _signature_config.json:
 
 
 
