@@ -5,7 +5,7 @@ In this tutorial, we go through the basic steps for implementing SAKURA, using a
 Peripheral Blood Mononuclear Cells (PBMC) freely available from 10XGenomics_.
 The processed data can be found here_.
 
-.. _10XGenomic: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
+.. _10XGenomics: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
 
 .. _here: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
 
@@ -81,10 +81,8 @@ Running SAKURA with the example dataset
 SAKURA uses a comprehensive JSON configuration file to control all aspects of the training process.
 Below we break down each section of the example configuration files:
 
-    - ``./pbmc5k/config.json ``
-    - ``./pbmc5k/signature_config.json ``
-
-.. _./pbmc5k/config.json:
+    - ``./pbmc5k/config.json``
+    - ``./pbmc5k/signature_config.json``
 
 Basic Configuration
 ,,,,,,,,,,,,,,,,,,,,,,
@@ -144,7 +142,7 @@ Related API: :class:`sakura.dataset`
     ``pheno_meta_path`` and ``selected_pheno``. See `Signature Configuration <./pbmc5k/signature_config.json>` for more details.
 
 Hardware and Data Splitting
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Related API: :class:`sakura.utils.data_splitter.DataSplitter`
 
 .. code-block:: json
@@ -157,11 +155,12 @@ Related API: :class:`sakura.utils.data_splitter.DataSplitter`
   },
 
 **Parameters:**
-- ``device``: Computation device ("cpu" for CPU-only, "cuda" for GPU acceleration)
-- ``overall_train_test_split``: Configuration for splitting data into training and testing sets
-- ``type``: "auto" for automatic splitting
-- ``train_dec``: Training set ratio denominator (5 = 80% training, 20% testing)
-- ``seed``: Random seed for reproducible data splitting
+
+    - ``device``: Computation device ("cpu" for CPU-only, "cuda" for GPU acceleration)
+    - ``overall_train_test_split``: Configuration for splitting data into training and testing sets
+    - ``type``: "auto" for automatic splitting
+    - ``train_dec``: Training set ratio denominator (5 = 80% training, 20% testing)
+    - ``seed``: Random seed for reproducible data splitting
 
 Model Architecture
 ,,,,,,,,,,,,,,,,,,,,,,
@@ -214,8 +213,8 @@ Related API: structure settings - :class:`sakura.models.extractor.Extractor` and
 
 
 Optimizer Configuration
-,,,,,,,,,,,,,,,,,,,,,,,,
-Related API: structure settings - :func::class:`sakura.model_controllers.extractor_controller.ExtractorController.setup_optimize()`
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Related API: structure settings - :func:`sakura.model_controllers.extractor_controller.ExtractorController.setup_optimize()`
 
 .. code-block:: json
 
@@ -226,12 +225,84 @@ Related API: structure settings - :func::class:`sakura.model_controllers.extract
   },
 
 **Parameters:**
+
     - ``type``: Optimization algorithm ("RMSProp")
     - ``RMSProp_lr``: Learning rate (0.001)
     - ``RMSProp_alpha``: Smoothing constant for RMSProp (0.9)
 
+Training Pipeline (Story)
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Related API: :func:`sakura.sakuraAE.sakuraAE.train_hybrid()`
+The ``story`` section defines the complete training workflow:
+
+.. code-block:: json
+
+  "story": [
+    {
+      "action": "train_hybrid",
+      "ticks": 5000,
+      "hybrid_mode": "interleave",
+
+**Training Strategy:**
+
+    - ``action``: Training mode ("train_hybrid" for overleave reconstruction and signature training)
+    - ``ticks``: Total number of training epochs (5000)
+    - ``hybrid_mode``: "interleave" alternates between different training objectives
+
+Split Configurations
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: json
+
+  "split_configs": {
+    "main_lat_reconstruct": {
+      "use_split": "overall_train",
+      "batch_size": 100,
+      "train_main_latent": "True",
+      "train_pheno": "False",
+      "train_signature": "False"
+    },
+    "cd8_focused": {
+      "use_split": "overall_train",
+      "batch_size": 100,
+      "train_main_latent": "False",
+      "train_pheno": "False",
+      "train_signature": "True",
+      "selected_signature": {
+        "cd4cd8": {
+          "loss": "*",
+          "regularization": "*"
+        }
+      }
+    }
+  },
+
+**Training Splits:**
+- ``main_lat_reconstruct``: Main autoencoder reconstruction training
+  - ``batch_size``: 100 cells per batch
+  - Focuses on learning latent representations
+- ``cd8_focused``: Signature-guided training
+  - Uses CD4/CD8 signature to guide latent space organization
+  - Applies signature-specific losses and regularizations
+
+Monitoring and Checkpointing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: json
+
+  "prog_loss_weight_mode": "epoch_end",
+  "perform_test": "True",
+  "test_segment": 500,
+  "make_logs": "True",
+  "log_prefix": "hybrid",
+  "perform_checkpoint": "True",
+  "checkpoint_segment": 500,
+
+
 .. _signature_config.json:
 
-
+Signature Configuration
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+testing
 
 
