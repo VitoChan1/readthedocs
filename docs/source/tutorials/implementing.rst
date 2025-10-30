@@ -10,7 +10,7 @@ The processed data can be found here_.
 .. _here: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
 
 Data preprocessing
-------------------------------------------
+---------------------
 We first include a data preprocessing pipeline using R and the Seurat package, which starts by reading in the data.
 The Read10X_h5() function in Seurat reads in the HDF5 file that contains single-cell RNA sequencing (scRNA-seq) data.
 We use the count matrix to initialize a Seurat object with quality control parameters:
@@ -73,13 +73,13 @@ After subsetting 10k highly variable genes, we export key data components as inp
     writeMM(seurat.hv10k@assays$RNA$data,"./tests/pbmc5k/processed/lognorm_hv10k.mtx")
 
 Users can prepare the pre-processed example dataset as input for SAKURA or use their own datasets.
-Training and testing with demo configuration on this dataset will cost less than 1 hour on the Intel Xeon CPU E5-2630 v2 @ 2.60GHz,
+Training and testing with demo configuration files on this dataset will cost less than 1 hour on the Intel Xeon CPU E5-2630 v2 @ 2.60GHz,
 which can be substantially improved with GPUs.
 
 Running SAKURA with the example dataset
 -----------------------------------------
-SAKURA uses a comprehensive JSON configuration file to control all aspects of the training process.
-Below we break down each section of the example configuration files:
+SAKURA uses comprehensive JSON configuration files to control all aspects of the training process.
+Below we break down some of the key parameters in each section of the example configuration files:
 
     - ``./pbmc5k/config.json``
     - ``./pbmc5k/signature_config.json``
@@ -141,18 +141,20 @@ Related API: :class:`sakura.dataset`
     Similarly, users can include optional phenotype learning task configuration JSON file with
     ``pheno_meta_path`` and ``selected_pheno``. See `Signature Configuration <./pbmc5k/signature_config.json_>` for more details.
 
+.. _datasplitting:
+
 Hardware and Data Splitting
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-Related API: :class:`sakura.utils.data_splitter.DataSplitter`
+Related API: :func:`sakura.sakuraAE.sakuraAE.generate_splits()` and :class:`sakura.utils.data_splitter.DataSplitter`
 
 .. code-block:: json
 
-  "device": "cpu",
-  "overall_train_test_split": {
-    "type": "auto",
-    "train_dec": 5,
-    "seed": 3407
-  },
+    "device": "cpu",
+    "overall_train_test_split": {
+        "type": "auto",
+        "train_dec": 5,
+        "seed": 3407
+    },
 
 **Parameters:**
 
@@ -243,68 +245,328 @@ The ``story`` section defines the complete training workflow:
       "action": "train_hybrid",
       "ticks": 5000,
       "hybrid_mode": "interleave",
-
-**Training Strategy:**
-
-    - ``action``: Training mode ("train_hybrid" for overleave reconstruction and signature training)
-    - ``ticks``: Total number of training epochs (5000)
-    - ``hybrid_mode``: "interleave" alternates between different training objectives
-
-Split Configurations
-~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: json
-
-  "split_configs": {
-    "main_lat_reconstruct": {
-      "use_split": "overall_train",
-      "batch_size": 100,
-      "train_main_latent": "True",
-      "train_pheno": "False",
-      "train_signature": "False"
-    },
-    "cd8_focused": {
-      "use_split": "overall_train",
-      "batch_size": 100,
-      "train_main_latent": "False",
-      "train_pheno": "False",
-      "train_signature": "True",
-      "selected_signature": {
-        "cd4cd8": {
-          "loss": "*",
-          "regularization": "*"
+      "split_configs": {
+        "main_lat_reconstruct": {
+          "use_split": "overall_train",
+          "batch_size": 100,
+          "train_main_latent": "True",
+          "train_pheno": "False",
+          "train_signature": "False"
+        },
+        "cd8_focused": {
+          "use_split": "overall_train",
+          "batch_size": 100,
+          "train_main_latent": "False",
+          "train_pheno": "False",
+          "train_signature": "True",
+          "selected_signature": {
+            "cd8": {
+              "loss": "*",
+              "regularization": "*"
+            }
+          }
         }
-      }
-    }
-  },
+      },
+      "prog_loss_weight_mode": "epoch_end",
 
-**Training Splits:**
+**Training Splits Strategy:**
 
+    - ``action``: Training mode ("train_hybrid" for both reconstruction and signature regression training)
+    - ``ticks``: Total number of training ticks (batches), 5000 is set considering the size of pbmc5k
+    - ``hybrid_mode``: "interleave" alternates between different training tasks
     - ``main_lat_reconstruct``: Main autoencoder reconstruction training
     - ``batch_size``: 100 cells per batch
-    - Focuses on learning latent representations
-    - ``cd8_focused``: Signature-guided training
-    - Uses CD4/CD8 signature to guide latent space organization
-    - Applies signature-specific losses and regularizations
+    - ``cd8_focused``: Signature-guided training, use cd8 related signature to guide latent space organization
+        and applies losses and regularizations according to `Signature Configuration <./pbmc5k/signature_config.json_>`
+    - ``prog_loss_weight_mode``: "epoch_end" controls loss weight updated at the end of each epoch
 
-Monitoring and Checkpointing
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note::
+    See also :func:`sakura.sakuraAE.sakuraAE.train()`, :func:`sakura.sakuraAE.sakuraAE.train_hybrid_fastload()`,
+    :func:`sakura.sakuraAE.sakuraAE.train_story()` for more details of different training ``action``s.
+
+**Logging and Checkpointing**
+Related API: :class:`sakura.utils.logger.Logger` and :func:`sakura.sakuraAE.sakuraAE.save_checkpoint()`
+Save model checkpoints every 500 ticks:
 
 .. code-block:: json
 
-  "prog_loss_weight_mode": "epoch_end",
-  "perform_test": "True",
-  "test_segment": 500,
-  "make_logs": "True",
-  "log_prefix": "hybrid",
-  "perform_checkpoint": "True",
-  "checkpoint_segment": 500,
+    "make_logs": "True",
+    "log_prefix": "hybrid",
+    "save_raw_loss": "True",
+    "log_loss_groups": ["loss", "regularization", "loss_raw", "regularization_raw"],
+    "perform_checkpoint": "True",
+    "checkpoint_on_segment": "True",
+    "checkpoint_segment": 500,
+    "checkpoint_prefix": "checkpoint_",
+    "checkpoint_save_arch": "True",
+    "checkpoint_every_epoch": "False",
 
+Testing and Latent dumping
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Related API: :func:`sakura.sakuraAE.sakuraAE.save_checkpoint()` and :class:`sakura.utils.logger.Logger`
+Perform tests on different data splits and save latent representations according to test configurations every 500 ticks:
+
+.. code-block:: json
+
+    "perform_test": "True",
+    "test_segment": 500,
+    "tests": [
+    {
+        "on_split": "all",
+        "make_logs": "False",
+        "dump_latent": "True",
+        "latent_prefix": "all_cell_all_latent"
+    },
+    {
+        "on_split": "overall_test",
+        "make_logs": "True",
+        "log_prefix": "overall_test",
+        "dump_latent": "True",
+        "latent_prefix": "overall_test_all_latent"
+    },
+    {
+        "on_split": "overall_train",
+        "make_logs": "False",
+        "dump_latent": "True",
+        "latent_prefix": "overall_train_all_latent"
+    }
+    ]
 
 .. _./pbmc5k/signature_config.json:
-
 Signature Configuration
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-testing
+In this tutorial, we use marker gene expression signature to incorporate biological prior knowledge into SAKURA training process.
+The ``./pbmc5k/signature_config.json`` file defines one biological signature that SAKURA should respect during training.
+
+**Example: CD8 T-cell Signature**
+
+.. code-block:: json
+
+    {
+    "cd8": {
+      "remarks": "major CD8 T cells marker(s)",
+      "signature_list": [
+        "CD8A",
+        "CD8B"
+      ],
+
+**Signature Definition:**
+
+    - ``cd8``: Signature identifier used throughout the configurations
+    - ``signature_list``: Array of gene names (CD8A, CD8B) that define this signature
+
+.. note::
+    Genes of signatures should be contained in the input data.
+
+Signature Processing Configuration
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+**Related API:** :func:`sakura.sakuraAE.sakuraAE.setup_dataset()` and :class:`sakura.models.extractor.Extractor`
+
+.. code-block:: json
+
+    "exclude_from_input": "False",
+    "signature_lat_dim": 50,
+    "signature_out_dim": 2,
+    "pre_procedure": [],
+    "post_procedure": [
+    {
+      "type": "ToTensor"
+    }
+    ],
+
+**Processing Parameters:**
+
+    - ``exclude_from_input``: Whether to remove signature genes from input data
+        - ``"False"``: Signature genes remain in the main expression matrix
+        - ``"True"``: Signature genes are excluded to prevent data leakage
+    - ``signature_lat_dim``: Dimensionality of signature-specific latent space (50)
+    - ``signature_out_dim``: Output dimension for signature prediction (2), should
+    corresponds to the number of genes in ``signature_list``
+
+Signature Splitting
+,,,,,,,,,,,,,,,,,,,,,,,,
+**Related API:**
+Related API: :func:`sakura.sakuraAE.sakuraAE.generate_splits()` and :class:`sakura.utils.data_splitter.DataSplitter`
+
+.. code-block:: json
+
+  "split": {
+    "type": "none"
+  },
+
+**Split Configuration:**
+    - ``type``: ``"none"`` - No special splitting for this signature
+
+.. note::
+    See also `<datasplitting_>` for similar format.
+
+Signature Model Architecture
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Related API: structure settings - :class:`sakura.models.extractor.Extractor`
+and loss/regularization settings - :class:`sakura.model_controllers.extractor_controller.ExtractorController`
+
+.. code-block:: json
+
+    "model": {
+      "type": "FCRegressor",
+      "hidden_neurons": 5,
+      "attach": "True",
+      "attach_to": "main_lat"
+    },
+    "loss": {
+      "regression_MSE": {
+        "type": "MSE",
+        "progressive_mode": "increment",
+        "progressive_const": 0.01,
+        "progressive_start_epoch": 50,
+        "init_weight": 0.0,
+        "max_weight": 1.0
+      },
+      "regression_L1": {
+        "type": "L1",
+        "progressive_mode": "increment",
+        "progressive_const": 0.01,
+        "progressive_start_epoch": 50,
+        "init_weight": 0.0,
+        "max_weight": 1.0
+      },
+      "regression_cosine": {
+        "type": "Cosine",
+        "progressive_mode": "increment",
+        "progressive_const": 0.01,
+        "progressive_start_epoch": 50,
+        "init_weight": 0.0,
+        "max_weight": 1.0
+      }
+    },
+    "regularization": {
+    }
+
+**Signature Model Configuration:**
+
+    - ``type``: ``"FCRegressor"`` - Fully Connected Regression model
+        - Alternative: ``"FCClassifier"`` for classification tasks
+    - ``hidden_neurons``: 5 - Number of neurons in hidden layer
+        - Small network suitable for simple signature patterns
+    - ``attach``: ``"True"`` - Connect this model to the main network
+        - ``attach_to``: ``"main_lat"`` - Connect to the main latent space,
+        allowing signature model to influence main representation learning
+
+
+
+Outputs of MIDAS
+================
+
+In this section, we explain the outputs generated by MIDAS and show how to retrieve them.
+
+Embedding Space Outputs
+~~~~~~~~~~~~~~~~~~~~~~~
+
+MIDAS generate reduction outputs including joint latents and modality latents:
+
+.. list-table::
+    :widths: 8, 20
+    :header-rows: 1
+
+    * - Type
+      - Description
+    * - **Joint Latents**
+      - The combined latent representation that integrates all modalities, along with the batch indices. This representation consists of biological information (denoted as `c`) and technical noise (denoted as `u`).
+    * - **Modality Latents**
+      - Latents corresponding to individual input modalities, consisting of biological information (denoted as `c`) and technical noise (denoted as `u`).
+
+Feature Space Outputs
+~~~~~~~~~~~~~~~~~~~~~~
+
+As a generative model, MIDAS can also generate outputs such as imputed data, batch-corrected data, and translated data.
+
+.. list-table::
+    :widths: 8, 20
+    :header-rows: 1
+
+    * - Type
+      - Description
+    * - **Imputed Data**
+      - Data for all modalities imputed from the joint latent representation.
+    * - **Batch-corrected Data**
+      - Imputed data with batch effects removed, generated by passing a standard noise latent instead of the real noise latent.
+    * - **Translated Data**
+      - Data translation between modalities, where input from one or more modalities is used to generate the corresponding data in other modalities.
+
+
+.. note::
+
+    By default, MIDAS performs sampling when generating batch-corrected data, based on the distribution settings.
+    To apply sampling to other types of outputs, or to disable sampling entirely, modify the ``gen_real_data()`` in ``scmidas.model.predict()``.
+
+Additionally, for debugging or other purposes, MIDAS can save the original input data:
+
+.. list-table::
+    :widths: 8, 20
+    :header-rows: 1
+
+    * - Type
+      - Description
+    * - **Input**
+      - The original input data before being fed into the model.
+
+Predicting Outputs
+~~~~~~~~~~~~~~~~~~~~
+
+After training, you can use the ``predict`` method to generate and save predictions. Here's the example:
+
+.. code-block:: python
+
+    pred = model.predict(
+                return_pred=True,
+                save_dir=None,
+                joint_latent=True,
+                mod_latent=True,
+                impute=True,
+                batch_correct=True,
+                translate=True,
+                input=True)
+
+Where the parameters are:
+
+- ``return_pred``: Whether to return the predicted outputs.
+- ``save_dir``: Directory to save the predicted outputs. If set to `None`, outputs will not be saved.
+- ``joint_latent``: Whether to calculate and save joint latent representations.
+- ``mod_latent``: Whether to calculate and save modality latent representations.
+- ``impute``: Whether to perform data imputation, filling in missing or incomplete data.
+- ``batch_correct``: Whether to apply batch correction to the data to reduce batch effects.
+- ``translate``: Whether to perform modality translation.
+- ``input`` : Whether to save the original input data.
+
+.. To save the predicted outputs, you can specify the ``save_dir`` parameter in the ``predict`` method. This will save the outputs in the specified directory.
+
+.. .. code-block:: python
+
+..   pred_dir = 'pred_dir_example'
+..   model.predict(
+..               return_pred = False,
+..               save_dir=pred_dir,
+..               joint_latent=True,
+..               mod_latent=True,
+..               impute=True,
+..               batch_correct=True,
+..               translate=True,
+..               input=True)
+
+To retrieve and load the predicted outputs, you can use the ``scmidas.utils.load_predicted()`` function. Here's how to do it:
+
+.. code-block:: python
+
+    from scmidas.utils import load_predicted
+    pred = load_predicted(
+                  pred_dir,
+                  model.combs, # a list of modality combinations per batch
+                  joint_latent=True,
+                  mod_latend=True,
+                  impute=True,
+                  batch_correct=True,
+                  translate=True,
+                  input=True)
+
 
 
