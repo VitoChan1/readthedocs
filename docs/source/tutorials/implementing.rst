@@ -60,10 +60,10 @@ Data Export
 -----------
 After subsetting 10k highly variable genes, we export key data components as input data of SAKURA:
 
-  - ``./tests/pbmc5k/genenames_hv10k.csv``: List of 10k highly variable gene names
-  - ``./tests/pbmc5k/cell_names.csv``: Filtered cell barcodes
-  - ``./tests/pbmc5k/pheno_df.csv``: Cell metadata including cell type annotations
-  - ``./tests/pbmc5k/lognorm_hv10k.mtx``: Normalized expression matrix in Matrix Market format
+  - ``genenames_hv10k.csv``: List of 10k highly variable gene names
+  - ``cell_names.csv``: Filtered cell barcodes
+  - ``pheno_df.csv``: Cell metadata including cell type annotations
+  - ``lognorm_hv10k.mtx``: Normalized expression matrix in Matrix Market format
 
 .. code-block:: r
 
@@ -139,7 +139,7 @@ Related API: :class:`sakura.dataset`
 
 .. note::
     Similarly, users can include optional phenotype learning task configuration JSON file with
-    ``pheno_meta_path`` and ``selected_pheno``. See `Signature Configuration <#./pbmc5k/signature_config.json>` for more details.
+    ``pheno_meta_path`` and ``selected_pheno``. See `Signature Configuration <./pbmc5k/signature_config.json_>` for more details.
 
 Hardware and Data Splitting
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -164,7 +164,8 @@ Related API: :class:`sakura.utils.data_splitter.DataSplitter`
 
 Model Architecture
 ,,,,,,,,,,,,,,,,,,,,,,
-Related API: structure settings - :class:`sakura.models.extractor.Extractor` and loss/regularization settings - :class:`sakura.model_controllers.extractor_controller.ExtractorController`
+Related API: structure settings - :class:`sakura.models.extractor.Extractor`
+and loss/regularization settings - :class:`sakura.model_controllers.extractor_controller.ExtractorController`
 
 .. code-block:: json
 
@@ -214,7 +215,7 @@ Related API: structure settings - :class:`sakura.models.extractor.Extractor` and
 
 Optimizer Configuration
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-Related API: structure settings - :func:`sakura.model_controllers.extractor_controller.ExtractorController.setup_optimize()`
+Related API: :func:`sakura.model_controllers.extractor_controller.ExtractorController.setup_optimize()`
 
 .. code-block:: json
 
@@ -278,12 +279,13 @@ Split Configurations
   },
 
 **Training Splits:**
-- ``main_lat_reconstruct``: Main autoencoder reconstruction training
-  - ``batch_size``: 100 cells per batch
-  - Focuses on learning latent representations
-- ``cd8_focused``: Signature-guided training
-  - Uses CD4/CD8 signature to guide latent space organization
-  - Applies signature-specific losses and regularizations
+
+    - ``main_lat_reconstruct``: Main autoencoder reconstruction training
+    - ``batch_size``: 100 cells per batch
+    - Focuses on learning latent representations
+    - ``cd8_focused``: Signature-guided training
+    - Uses CD4/CD8 signature to guide latent space organization
+    - Applies signature-specific losses and regularizations
 
 Monitoring and Checkpointing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -299,7 +301,7 @@ Monitoring and Checkpointing
   "checkpoint_segment": 500,
 
 
-.. _signature_config.json:
+.. _./pbmc5k/signature_config.json:
 
 Signature Configuration
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
