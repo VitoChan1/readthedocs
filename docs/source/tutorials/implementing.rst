@@ -139,7 +139,7 @@ Related API: :class:`sakura.dataset`
 
 .. note::
     Similarly, users can include optional phenotype learning task configuration JSON file with
-    ``pheno_meta_path`` and ``selected_pheno``. See `Signature Configuration < ./pbmc5k/signature_config.json_ >` for more details.
+    ``pheno_meta_path`` and ``selected_pheno``. See Signature Configuration ./pbmc5k/signature_config.json_ for more details.
 
 .. _datasplitting:
 
@@ -277,7 +277,7 @@ The ``story`` section defines the complete training workflow:
     - ``main_lat_reconstruct``: Main autoencoder reconstruction training
     - ``batch_size``: 100 cells per batch
     - ``cd8_focused``: Signature-guided training, use cd8 related signature to guide latent space organization
-        and applies losses and regularizations according to `Signature Configuration <./pbmc5k/signature_config.json_>`
+        and applies losses and regularizations according to Signature Configuration <./pbmc5k/signature_config.json_>
     - ``prog_loss_weight_mode``: "epoch_end" controls loss weight updated at the end of each epoch
 
 .. note::
