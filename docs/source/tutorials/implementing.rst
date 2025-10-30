@@ -141,6 +141,7 @@ Related API: :class:`sakura.dataset`
     Similarly, users can include optional phenotype learning task configuration JSON file with
     ``pheno_meta_path`` and ``selected_pheno``. See `Signature Configuration <signature_config_>` for more details.
 
+
 .. _datasplitting:
 
 Hardware and Data Splitting
@@ -282,7 +283,7 @@ The ``story`` section defines the complete training workflow:
 
 .. note::
     See also :func:`sakura.sakuraAE.sakuraAE.train()`, :func:`sakura.sakuraAE.sakuraAE.train_hybrid_fastload()`,
-    :func:`sakura.sakuraAE.sakuraAE.train_story()` for more details of different training ``action``s.
+    :func:`sakura.sakuraAE.sakuraAE.train_story()` for more details of different training <action>s.
 
 **Logging and Checkpointing**
 Related API: :class:`sakura.utils.logger.Logger` and :func:`sakura.sakuraAE.sakuraAE.save_checkpoint()`
@@ -331,6 +332,7 @@ Perform tests on different data splits and save latent representations according
         "latent_prefix": "overall_train_all_latent"
     }
     ]
+
 
 .. _signature_config:
 
@@ -568,6 +570,3 @@ To retrieve and load the predicted outputs, you can use the ``scmidas.utils.load
                   batch_correct=True,
                   translate=True,
                   input=True)
-
-
-
