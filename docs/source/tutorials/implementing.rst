@@ -4,7 +4,9 @@ Implementing SAKURA
 In this tutorial, we go through the basic steps for implementing SAKURA, using a dataset of ~5k
 Peripheral Blood Mononuclear Cells (PBMC) freely available from 10XGenomics_.
 The processed data can be found here_.
+
 .. _10XGenomic: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
+
 .. _here: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
 
 Data preprocessing
