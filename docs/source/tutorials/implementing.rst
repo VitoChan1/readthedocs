@@ -22,7 +22,7 @@ We use the count matrix to initialize a Seurat object with quality control param
     library(tidyverse)
     library(ggplot2)
 
-    data <- Read10X_h5(filename = "./pbmc5k/raw/5k_Human_Donor1_PBMC_3p_gem-x_5k_Human_Donor1_PBMC_3p_gem-x_count_sample_filtered_feature_bc_matrix.h5")
+    data <- Read10X_h5(filename = "./tests/pbmc5k/raw/5k_Human_Donor1_PBMC_3p_gem-x_5k_Human_Donor1_PBMC_3p_gem-x_count_sample_filtered_feature_bc_matrix.h5")
     # Retains genes detected in at least 3 cells, cells with at least 200 detected genes
     seurat_object <- CreateSeuratObject(counts=data, project="pbmc5k", min.cells=3, min.features=200)
 
@@ -33,7 +33,7 @@ for simplicity, and then integrate corresponding cell type information into Seur
 
 .. code-block:: r
 
-    cell_type <- read.csv("./pbmc5k/raw/cell_types.csv",row.names = 1,header=TRUE)
+    cell_type <- read.csv("./tests/pbmc5k/raw/cell_types.csv",row.names = 1,header=TRUE)
     cur_cell <- rownames(seurat_object@meta.data)
     cur_celltype <- cell_type[cur_cell, ]
     seurat_object@meta.data <- cbind(seurat_object@meta.data, cur_celltype)
@@ -512,16 +512,22 @@ Also, we generate comparative visualizations (UMAP) colored by Cell Ranger coars
 
 .. code-block:: r
 
-    data <- read.csv(paste0(path, '.csv'), row.names = 1)
+    data <- read.csv('./test/pbmc5k/log/172_all_cell_all_latent.csv', row.names = 1)
     embedding_data <- data[,1:50]
     seurat.hv10k[["sakura"]] <- CreateDimReducObject(embeddings = embedding_data %>% as.matrix, key = "sakura_", assay = DefaultAssay(seurat.hv10k))
     seurat.hv10k <- seurat.hv10k %>% FindNeighbors(reduction = 'sakura') %>% FindClusters()
-    seurat.hv10k <- RunUMAP(seurat.hv10k,
-                      reduction = "sakura",
-                      dims = 1:50)
+    seurat.hv10k <- RunUMAP(seurat.hv10k, reduction = "sakura", dims = 1:50)
+    dir.create("./tests/pbmc5k/analysis/")
     plot1 <- DimPlot(seurat.hv10k, group.by = "coarse_cell_type", label=TRUE)
     plot2 <- DimPlot(seurat.hv10k, label=TRUE)
+    # SAKURA UMAP visualizations for cell types and clusters
+    pdf("./tests/pbmc5k/analysis/SAKURA.dim_plot.cell_type.cluster.pdf", width = 16)
     plot1+plot2
+    dev.off()
+    # feature plots for key T cell marker genes (CD8A, CD8B, CD4)
+    pdf("./tests/pbmc5k/analysis/SAKURA.feature_plot.CD4.CD8.cluster.pdf", width = 8)
+    FeaturePlot(seurat.hv10k, features = c("CD8A", "CD8B", "CD4"))
+    dev.off()
 
 Loads 10xGenomics Cell Ranger Analysis
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -529,15 +535,22 @@ We load the pre-computed UMAP coordinates and cluster assignments from Cell Rang
 
 .. code-block:: r
 
-    umap <- read.csv("./pbmc5k/projection.csv",row.names = 1,header=TRUE)
-    cluster <- read.csv("./pbmc5k/clusters.csv",row.names = 1,header=TRUE)
+    umap <- read.csv("./tests/pbmc5k/projection.csv",row.names = 1,header=TRUE)
+    cluster <- read.csv("./tests/pbmc5k/clusters.csv",row.names = 1,header=TRUE)
     cur_umap <- umap[cur_cell, ]
     cur_cluster <- cluster[cur_cell, ]
     umap_filtered <- cur_umap[cells_to_keep,]
     cluster_filetered <- cur_cluster[cells_to_keep]
-    seurat.hv10k[["umap"]] <- CreateDimReducObject(embeddings = umap_filtered %>% as.matrix, key = "umap_", assay = DefaultAssay(seurat.hv10k))
+    seurat.hv10k[["crumap"]] <- CreateDimReducObject(embeddings = umap_filtered %>% as.matrix, key = "crumap_", assay = DefaultAssay(seurat.hv10k))
     Idents(seurat.hv10k) <- cluster_filetered
-    plot3 <- DimPlot(seurat.hv10k, group.by = "coarse_cell_type", label=TRUE)
-    plot4 <- DimPlot(seurat.hv10k, label=TRUE)
+    # Cell Ranger UMAP visualizations for cell types and clusters
+    plot3 <- DimPlot(seurat.hv10k, reduction="crumap", group.by = "coarse_cell_type", label=TRUE)
+    plot4 <- DimPlot(seurat.hv10k, reduction="crumap", label=TRUE)
+    pdf("./tests/pbmc5k/analysis/Cell_Ranger.dim_plot.cell_type.cluster.pdf", width = 16)
     plot3+plot4
+    dev.off()
+    pdf("./tests/pbmc5k/analysis/Cell_Ranger.feature_plot.CD4.CD8.cluster.pdf", width = 8)
+    FeaturePlot(seurat.hv10k, features = c("CD8A", "CD8B", "CD4"))
+    dev.off()
+
 
