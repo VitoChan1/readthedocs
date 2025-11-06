@@ -9,8 +9,11 @@ The processed data can be found here_.
 
 .. _here: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
 
-Data preprocessing
+Inputs of SAKURA
 ---------------------
+
+Data preprocessing
+,,,,,,,,,,,,,,,,,,,
 We first include a data preprocessing pipeline using R and the Seurat package, which starts by reading in the data.
 The Read10X_h5() function in Seurat reads in the HDF5 file that contains single-cell RNA sequencing (scRNA-seq) data.
 We use the count matrix to initialize a Seurat object with quality control parameters:
@@ -27,7 +30,7 @@ We use the count matrix to initialize a Seurat object with quality control param
     seurat_object <- CreateSeuratObject(counts=data, project="pbmc5k", min.cells=3, min.features=200)
 
 Cell Type Filtering
-------------------------------------------
+,,,,,,,,,,,,,,,,,,,,
 Next, we read in the cell type information and filter a few cell types in the PBMC_5k dataset
 for simplicity, and then integrate corresponding cell type information into Seurat object metadata.
 
@@ -46,7 +49,7 @@ for simplicity, and then integrate corresponding cell type information into Seur
     As this reference is community-driven it may not cover all tissue types, which could impact your results.
 
 Normalization and Feature Selection
------------------------------------
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 We then perform minimal pre-processing of the data, including log-transformation of the raw UMI counts using NormalizeData(),
 selecting the 10,000 genes with highest variance using FindVariableFeatures(), and scaling the data based on the high variance genes using ScaleData().
 
@@ -57,7 +60,7 @@ selecting the 10,000 genes with highest variance using FindVariableFeatures(), a
     seurat.hv10k <- seurat_filtered[VariableFeatures(seurat_filtered),]
 
 Data Export
------------
+,,,,,,,,,,,,,
 After subsetting 10k highly variable genes, we export key data components as input data of SAKURA:
 
   - ``genenames_hv10k.csv``: List of 10k highly variable gene names
