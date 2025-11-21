@@ -2,7 +2,8 @@ Implementing SAKURA
 ========================================
 
 In this tutorial, we go through the basic steps for implementing SAKURA, using a dataset of ~5k
-Peripheral Blood Mononuclear Cells (PBMC) freely available from 10XGenomics_.
+Peripheral Blood Mononuclear Cells (PBMC) freely available from 10XGenomics_ with marker genes
+'CD8A' and 'CD8B' as the knowledge input to guide dimensionality reduction.
 The processed data can be found here_.
 
 .. _10XGenomics: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
@@ -59,11 +60,11 @@ selecting the 10,000 genes with highest variance using FindVariableFeatures(), a
     seurat_filtered <- seurat_filtered %>% ScaleData(features = VariableFeatures(seurat_filtered))
     seurat.hv10k <- seurat_filtered[VariableFeatures(seurat_filtered),]
 
-Data Export
-,,,,,,,,,,,,,
-After subsetting 10k highly variable genes, we export key data components as input data of SAKURA:
+Export Preprocessed Data
+,,,,,,,,,,,,,,,,,,,,,,,,,
+With 10k highly variable genes subset, we export key data components as input data of SAKURA:
 
-  - ``genenames_hv10k.csv``: List of 10k highly variable gene names
+  - ``genenames_hv10k.csv``: List of the 10k highly variable gene names
   - ``cell_names.csv``: Filtered cell barcodes
   - ``pheno_df.csv``: Cell metadata including cell type annotations
   - ``lognorm_hv10k.mtx``: Normalized expression matrix in Matrix Market format
@@ -91,13 +92,17 @@ Since we have installed SAKURA in :doc:`installation`, we can now run SAKURA as 
 
 .. code-block:: console
 
-    (sakura) ~/.../SAKURA/$ python -m sakura -c ./test/pbmc5k/config.json --verbose True &> ./test/pbmc5k/console.log
+    (sakura) ~/.../SAKURA/$ python -m sakura -c ./test/pbmc5k/config.json -v True &> ./test/pbmc5k/console.log
 
 **Command Breakdown:**
 
     - ``-c ./test/pbmc5k/config.json``: Specifies the path to configuration file
-    - ``--verbose True``: Enables verbose logging for detailed progress information
+    - ``-v True``: Enables verbose logging for detailed progress information
     - ``&> ./test/pbmc5k/console.log``: Redirects both standard output and error to log file
+
+.. note::
+    See :func:`sakura.sakuraAE.sakuraAE.train()`, :func:`sakura.sakuraAE.sakuraAE.train_hybrid_fastload()`,
+    :func:`sakura.sakuraAE.sakuraAE.train_story()` for more details of different training <action>s.
 
 Below we break down some of the key parameters in each section of the example configuration files:
 
@@ -511,7 +516,7 @@ This final section demonstrates how to simply compare SAKURA's final cell embedd
 Analysis SAKURA Embeddings with Seurat
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 We perform standard clustering and UMAP pipeline using Seurat on SAKURA cell embedding.
-Also, we generate comparative visualizations (UMAP) colored by Cell Ranger coarse cell type annotations and SAKURA cluster identities.
+Together, we generate comparative visualizations (UMAP) colored by Cell Ranger coarse cell type annotations and SAKURA cluster identities.
 
 .. code-block:: r
 
@@ -527,10 +532,22 @@ Also, we generate comparative visualizations (UMAP) colored by Cell Ranger coars
     pdf("./tests/pbmc5k/analysis/SAKURA.dim_plot.cell_type.cluster.pdf", width = 16)
     plot1+plot2
     dev.off()
-    # feature plots for key T cell marker genes (CD8A, CD8B, CD4)
+
+.. image:: ../static/SAKURA.dim_plot.cell_type.cluster.png
+    :scale: 50%
+    :align: center
+
+Also, we generate feature plots for key T cell marker genes 'CD8A', 'CD8B' and 'CD4':
+
+.. code-block:: r
+
     pdf("./tests/pbmc5k/analysis/SAKURA.feature_plot.CD4.CD8.cluster.pdf", width = 8)
     FeaturePlot(seurat.hv10k, features = c("CD8A", "CD8B", "CD4"))
     dev.off()
+
+.. image:: ../static/SAKURA.feature_plot.CD4.CD8.cluster.png
+    :scale: 50%
+    :align: center
 
 Loads 10xGenomics Cell Ranger Analysis
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -552,6 +569,7 @@ We load the pre-computed UMAP coordinates and cluster assignments from Cell Rang
     pdf("./tests/pbmc5k/analysis/Cell_Ranger.dim_plot.cell_type.cluster.pdf", width = 16)
     plot3+plot4
     dev.off()
+        # feature plots for key T cell marker genes (CD8A, CD8B, CD4)
     pdf("./tests/pbmc5k/analysis/Cell_Ranger.feature_plot.CD4.CD8.cluster.pdf", width = 8)
     FeaturePlot(seurat.hv10k, features = c("CD8A", "CD8B", "CD4"))
     dev.off()
