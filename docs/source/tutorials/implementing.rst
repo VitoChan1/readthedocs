@@ -3,7 +3,7 @@ Implementing SAKURA
 
 In this tutorial, we go through the basic steps for implementing SAKURA, using a dataset of ~5k
 Peripheral Blood Mononuclear Cells (PBMC) freely available from 10XGenomics_ with marker genes
-'CD8A' and 'CD8B' as the knowledge input to guide dimensionality reduction.
+`CD8A` and `CD8B` as the knowledge input to guide dimensionality reduction.
 The processed data can be found here_.
 
 .. _10XGenomics: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
@@ -534,10 +534,10 @@ Together, we generate comparative visualizations (UMAP) colored by Cell Ranger c
     dev.off()
 
 .. image:: ../static/SAKURA.dim_plot.cell_type.cluster.png
-    :scale: 50%
+    :scale: 20%
     :align: center
 
-Also, we generate feature plots for key T cell marker genes 'CD8A', 'CD8B' and 'CD4':
+Also, we generate feature plots for key T cell marker genes `CD8A`, `CD8B` and `CD4`:
 
 .. code-block:: r
 
@@ -546,7 +546,7 @@ Also, we generate feature plots for key T cell marker genes 'CD8A', 'CD8B' and '
     dev.off()
 
 .. image:: ../static/SAKURA.feature_plot.CD4.CD8.cluster.png
-    :scale: 50%
+    :scale: 20%
     :align: center
 
 Loads 10xGenomics Cell Ranger Analysis
