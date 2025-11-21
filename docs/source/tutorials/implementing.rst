@@ -534,7 +534,7 @@ Together, we generate comparative visualizations (UMAP) colored by Cell Ranger c
     dev.off()
 
 .. image:: ../static/SAKURA.dim_plot.cell_type.cluster.png
-    :scale: 20%
+    :scale: 8%
     :align: center
 
 Also, we generate feature plots for key T cell marker genes `CD8A`, `CD8B` and `CD4`:
@@ -546,7 +546,7 @@ Also, we generate feature plots for key T cell marker genes `CD8A`, `CD8B` and `
     dev.off()
 
 .. image:: ../static/SAKURA.feature_plot.CD4.CD8.cluster.png
-    :scale: 20%
+    :scale: 15%
     :align: center
 
 Loads 10xGenomics Cell Ranger Analysis
