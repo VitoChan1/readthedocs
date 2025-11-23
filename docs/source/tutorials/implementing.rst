@@ -540,7 +540,7 @@ and the cluster assignments.
     :width: 960px
     :align: center
 
-
+.. linebreak
 
 Also, we generate feature plots for key T cell marker genes `CD8A`, `CD8B` and `CD4`:
 
@@ -555,7 +555,7 @@ Also, we generate feature plots for key T cell marker genes `CD8A`, `CD8B` and `
     :width: 960px
     :align: center
 
-
+.. linebreak
 
 Analysis SAKURA Embeddings with Seurat
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -582,7 +582,7 @@ and SAKURA cluster identities.
     :width: 960px
     :align: center
 
-
+.. linebreak
 
 Also, we generate the same feature plots for key T cell marker genes `CD8A`, `CD8B` and `CD4`:
 
@@ -592,11 +592,11 @@ Also, we generate the same feature plots for key T cell marker genes `CD8A`, `CD
     FeaturePlot(seurat.hv10k, features = c("CD8A", "CD8B", "CD4"))
     dev.off()
 
-.. image:: ../static/SAKURA.feature_plot.CD4.CD8.png
+.. image:: ../static/SAKURA.feature_plot.CD4.CD.cluster.png
     :width: 960px
     :align: center
 
-
+.. linebreak
 
 Comparing all the feature and UMAP plots from above analysis,
 the results indicate improved separation of CD4+ and CD8+ T cells
