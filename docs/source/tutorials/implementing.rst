@@ -513,10 +513,51 @@ Comparative Analysis: SAKURA vs 10x Genomics Cell Ranger
 ----------------------------------------------------------
 This final section demonstrates how to simply compare SAKURA's final cell embeddings with 10x Genomics Cell Ranger analysis results using Seurat.
 
+Loads 10xGenomics Cell Ranger Analysis
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+We first load the pre-computed UMAP coordinates and cluster assignments from Cell Ranger
+and show comparative visualizations (UMAP) colored by Cell Ranger coarse cell type annotations
+and the cluster assignments.
+
+.. code-block:: r
+
+    umap <- read.csv("./tests/pbmc5k/projection.csv",row.names = 1,header=TRUE)
+    cluster <- read.csv("./tests/pbmc5k/clusters.csv",row.names = 1,header=TRUE)
+    cur_umap <- umap[cur_cell, ]
+    cur_cluster <- cluster[cur_cell, ]
+    umap_filtered <- cur_umap[cells_to_keep,]
+    cluster_filetered <- cur_cluster[cells_to_keep]
+    seurat.hv10k[["crumap"]] <- CreateDimReducObject(embeddings = umap_filtered %>% as.matrix, key = "crumap_", assay = DefaultAssay(seurat.hv10k))
+    Idents(seurat.hv10k) <- cluster_filetered
+    # Cell Ranger UMAP visualizations for cell types and clusters
+    plot3 <- DimPlot(seurat.hv10k, reduction="crumap", group.by = "coarse_cell_type", label=TRUE)
+    plot4 <- DimPlot(seurat.hv10k, reduction="crumap", label=TRUE)
+    pdf("./tests/pbmc5k/analysis/Cell_Ranger.dim_plot.cell_type.cluster.pdf", width = 16)
+    plot3+plot4
+    dev.off()
+
+.. image:: ../static/Cell_Ranger.dim_plot.cell_type.cluster.png
+    :width: 960px
+    :align: center
+
+Also, we generate feature plots for key T cell marker genes `CD8A`, `CD8B` and `CD4`:
+
+.. code-block:: r
+
+    # feature plots for key T cell marker genes (CD8A, CD8B, CD4)
+    pdf("./tests/pbmc5k/analysis/Cell_Ranger.feature_plot.CD4.CD8.cluster.pdf", width = 8)
+    FeaturePlot(seurat.hv10k, features = c("CD8A", "CD8B", "CD4"))
+    dev.off()
+
+.. image:: ../static/Cell_Ranger.feature_plot.CD4.CD8.cluster.png
+    :width: 960px
+    :align: center
+
 Analysis SAKURA Embeddings with Seurat
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-We perform standard clustering and UMAP pipeline using Seurat on SAKURA cell embedding.
-Together, we generate comparative visualizations (UMAP) colored by Cell Ranger coarse cell type annotations and SAKURA cluster identities.
+Then, we perform standard clustering and UMAP pipeline using Seurat on SAKURA cell embedding.
+Similarly, we generate comparative visualizations (UMAP) colored by Cell Ranger coarse cell type annotations
+and SAKURA cluster identities.
 
 .. code-block:: r
 
@@ -537,7 +578,8 @@ Together, we generate comparative visualizations (UMAP) colored by Cell Ranger c
     :width: 960px
     :align: center
 
-Also, we generate feature plots for key T cell marker genes `CD8A`, `CD8B` and `CD4`:
+
+Also, we generate the same feature plots for key T cell marker genes `CD8A`, `CD8B` and `CD4`:
 
 .. code-block:: r
 
@@ -546,32 +588,11 @@ Also, we generate feature plots for key T cell marker genes `CD8A`, `CD8B` and `
     dev.off()
 
 .. image:: ../static/SAKURA.feature_plot.CD4.CD8.cluster.png
-    :scale: 15%
+    :width: 960px
     :align: center
 
-Loads 10xGenomics Cell Ranger Analysis
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-We load the pre-computed UMAP coordinates and cluster assignments from Cell Ranger and generate the same comparative visualizations (UMAP).
-
-.. code-block:: r
-
-    umap <- read.csv("./tests/pbmc5k/projection.csv",row.names = 1,header=TRUE)
-    cluster <- read.csv("./tests/pbmc5k/clusters.csv",row.names = 1,header=TRUE)
-    cur_umap <- umap[cur_cell, ]
-    cur_cluster <- cluster[cur_cell, ]
-    umap_filtered <- cur_umap[cells_to_keep,]
-    cluster_filetered <- cur_cluster[cells_to_keep]
-    seurat.hv10k[["crumap"]] <- CreateDimReducObject(embeddings = umap_filtered %>% as.matrix, key = "crumap_", assay = DefaultAssay(seurat.hv10k))
-    Idents(seurat.hv10k) <- cluster_filetered
-    # Cell Ranger UMAP visualizations for cell types and clusters
-    plot3 <- DimPlot(seurat.hv10k, reduction="crumap", group.by = "coarse_cell_type", label=TRUE)
-    plot4 <- DimPlot(seurat.hv10k, reduction="crumap", label=TRUE)
-    pdf("./tests/pbmc5k/analysis/Cell_Ranger.dim_plot.cell_type.cluster.pdf", width = 16)
-    plot3+plot4
-    dev.off()
-        # feature plots for key T cell marker genes (CD8A, CD8B, CD4)
-    pdf("./tests/pbmc5k/analysis/Cell_Ranger.feature_plot.CD4.CD8.cluster.pdf", width = 8)
-    FeaturePlot(seurat.hv10k, features = c("CD8A", "CD8B", "CD4"))
-    dev.off()
-
+Comparing all the feature and UMAP plots from above analysis,
+the results indicate improved separation of CD4+ and CD8+ T cells
+without introducing stronger distortion to the SAKURA cell embedding,
+with the marker genes `CD8A` and `CD8B` as input knowledge.
 
