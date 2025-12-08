@@ -12,7 +12,7 @@ Approach 1: Pre-corrected Expression Input
 Perform batch correction methods on the raw expression matrix prior to utilizing SAKURA.
 The resulting expression matrix will serve as the input dataset for implementing SAKURA.
 
-**Advantages**:
+:**Advantages**:
   - Corrects at the expression level, preserving biological signals
   - Flexible choice of established methods with extensive validation
   - SAKURA operates normally without modifications
