@@ -18,9 +18,9 @@ The resulting expression matrix will serve as the input dataset for implementing
   - SAKURA operates normally without modifications
 
 **Considerations**:
-- May over-correct and remove subtle biological variations
-- Requires careful parameter tuning for optimal results due to transformed statistical properties \
-  and potential information loss in the batch corrected data
+  - May over-correct and remove subtle biological variations
+  - Requires careful parameter tuning for optimal results due to transformed statistical properties \
+    and potential information loss in the batch corrected data
 
 **Suitable Methods**:
 
