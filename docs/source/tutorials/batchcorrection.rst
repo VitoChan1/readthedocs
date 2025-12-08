@@ -23,10 +23,9 @@ The resulting expression matrix will serve as the input dataset for implementing
     and potential information loss in the batch corrected data
 
 **Suitable Methods**:
-
-- `Seurat CCA/RPCA <https://satijalab.org/seurat>`_: Batch effect correction aligning canonical basis vectors or reciprocal PCA
-- `scVI <https://scvi-tools.org>`_: Probabilistic modeling of batch effects
-- `Liger <https://github.com/welch-lab/liger>`_: Batch effect correction relies on integrative non-negative matrix factorization
+  - `Seurat CCA/RPCA <https://satijalab.org/seurat>`_: Batch effect correction aligning canonical basis vectors or reciprocal PCA
+  - `scVI <https://scvi-tools.org>`_: Probabilistic modeling of batch effects
+  - `Liger <https://github.com/welch-lab/liger>`_: Batch effect correction relies on integrative non-negative matrix factorization
 
 Approach 2: Post-hoc Embedding Correction
 -----------------------------------------
@@ -41,28 +40,24 @@ already enriched for biological signal.
     (e.g., gene loadings for matrix reconstruction).
 
 **Typical Workflow**:
-
-1. **Extract batch information** from metadata during data preprocessing (``batch``, ``donor``, ``sequencing_run``, etc.)
-2. **Generate SAKURA embeddings** using standard training pipeline
-3. **Apply batch correction** to SAKURA embeddings using external tools
-4. **Use corrected embeddings** for clustering, visualization, and analysis
+  1. **Extract batch information** from metadata during data preprocessing (``batch``, ``donor``, ``sequencing_run``, etc.)
+  2. **Generate SAKURA embeddings** using standard training pipeline
+  3. **Apply batch correction** to SAKURA embeddings using external tools
+  4. **Use corrected embeddings** for clustering, visualization, and analysis
 
 **Advantages**:
-
-- Preserves SAKURA's biological signal learning
-- Reduces correction computational cost and time with low-dimensional SAKURA embedding
-- Enables modular evaluation on both SAKURA feature learning quality and batch correction efficacy
+  - Preserves SAKURA's biological signal learning
+  - Reduces correction computational cost and time with low-dimensional SAKURA embedding
+  - Enables modular evaluation on both SAKURA feature learning quality and batch correction efficacy
 
 **Considerations**:
-
-- Requires compatible correction methods applied after feature learning
-- May involve iterative optimization between external correction methods and SAKURA \
-  targeting two objectives, i.e. biological signal learning and batch effect correction
+  - Requires compatible correction methods applied after feature learning
+  - May involve iterative optimization between external correction methods and SAKURA \
+    targeting two objectives, i.e. biological signal learning and batch effect correction
 
 **Suitable Methods**:
-
-- `Harmony <https://github.com/immunogenomics/harmony>`_: Integration using diversity clustering correction
-- `fastMNN <https://github.com/MarioniLab/FurtherMNN2018/>`_: Batch effect correction aligning mutual nearest neighbors by cosine distance
+  - `Harmony <https://github.com/immunogenomics/harmony>`_: Integration using diversity clustering correction
+  - `fastMNN <https://github.com/MarioniLab/FurtherMNN2018/>`_: Batch effect correction aligning mutual nearest neighbors by cosine distance
 
 
 Approach 3: Knowledge-Guided Training with Pre-Corrected Embeddings
@@ -115,21 +110,18 @@ Use pre-computed, batch-corrected low dimensional embeddings as the knowledge in
     }
 
 **Advantages**:
-
-- Separates the complex problem of batch correction from knowledge-guided deep learning
-- Flexible integration with existing workflows where batch correction is a standardized upstream step
+  - Separates the complex problem of batch correction from knowledge-guided deep learning
+  - Flexible integration with existing workflows where batch correction is a standardized upstream step
 
 **Considerations**:
-
-- Requires appropriate choice of upstream batch correction methods and decent validation
-- Requires careful parameter tuning balancing the intensity of batch correction and other biological signal learning
-- Evaluation is holistic; difficult to disentangle the combined effect due to the fused learning.
+  - Requires appropriate choice of upstream batch correction methods and decent validation
+  - Requires careful parameter tuning balancing the intensity of batch correction and other biological signal learning
+  - Evaluation is holistic; difficult to disentangle the combined effect due to the fused learning.
 
 **Suitable Methods**:
-
-- `Harmony <https://github.com/immunogenomics/harmony>`_: Integration using diversity clustering correction
-- `BBKNN <https://github.com/Teichlab/bbknn>`_: Batch balanced k-nearest neighbors
-- `Scanorama <https://github.com/brianhie/scanorama>`_: Panoramic stitching of datasets via mutual nearest neighbors
+  - `Harmony <https://github.com/immunogenomics/harmony>`_: Integration using diversity clustering correction
+  - `BBKNN <https://github.com/Teichlab/bbknn>`_: Batch balanced k-nearest neighbors
+  - `Scanorama <https://github.com/brianhie/scanorama>`_: Panoramic stitching of datasets via mutual nearest neighbors
 
 
 Conclusion
