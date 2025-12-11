@@ -7,6 +7,7 @@
 Single-cell data Analysis with Knowledge inputs from User using Regularized Autoencoders (SAKURA) is a knowledge-guided dimensionality reduction framework. 
 It focuses on the task of producing an embedding (i.e., a low-dimensional representation) of scRNA-seq or scATAC-seq data, to be guided by a large variety of knowledge inputs related to genes and genomic regions. 
 
+<img width=100% src="https://github.com/VitoChan1/SAKURA/blob/main/docs/source/static/FigOverallDesign.png"/>
 
 <p align="center">
   Read our paper at <a href="https://www.biorxiv.org/content/10.1101/2025.10.01.679835v1" target="_blank">A knowledge-guided approach to recovering important rare signals from high-dimensional single-cell data</a>.
@@ -30,16 +31,17 @@ All model implementations have a high-level API that interacts with
 
 ```
 .
-├── scglue                  # Main Python package
-├── data                    # Data files
-├── evaluation              # Method evaluation pipelines
-├── experiments             # Experiments and case studies
-├── tests                   # Unit tests for the Python package
-├── docs                    # Documentation files
-├── custom                  # Customized third-party packages
-├── packrat                 # Reproducible R environment via packrat
-├── env.yaml                # Reproducible Python environment via conda
+├── sakura/                 # Main Python package
+│   ├── dataset             # Input dataset handling classes
+│   ├── model_controllers   # Model workflow controllers 
+│   ├── models              # Model components and architectures 
+│   ├── utils               # Utilities: dataset splitter, distance computation, etc.
+│   ├── sakuraAE.py         # Generic SAKURA pipeline class
 ├── pyproject.toml          # Python package metadata
+├── poetry.lock             # Poetry locked dependencies for consistent installs
+├── requirements.txt        # Projen: Main dependencies for production
+├── requirements-dev.txt    # Projen: Additional dependencies for development
+├── Icon.png
 ├── LICENSE
 └── README.md
 ```
