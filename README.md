@@ -17,7 +17,7 @@ It focuses on the task of producing an embedding (i.e., a low-dimensional repres
 </p>
 
 <p align="center">
-  For documentation source and related data, you can visit the <a href="https://github.com/VitoChan1/SAKURA" target="_blank">Documentation Repository</a> [Documentation Repository](https://github.com/VitoChan1/SAKURA)
+  For documentation source and related data, you can visit the <a href="https://github.com/VitoChan1/SAKURA" target="_blank">Documentation Repository</a>.
 </p>
 
 <!-- 
