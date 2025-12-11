@@ -13,7 +13,11 @@ It focuses on the task of producing an embedding (i.e., a low-dimensional repres
 </p>
 
 <p align="center">
-  Read our documentation at <a href="https://yip-sakura.readthedocs.io/en/latest/" target="_blank">https://yip-sakura.readthedocs.io/en/latest/</a>.
+  For detailed documentation and usage tutorials, please refer to <a href="https://yip-sakura.readthedocs.io/en/latest/" target="_blank">https://yip-sakura.readthedocs.io/en/latest/</a>.
+</p>
+
+<p align="center">
+  For documentation source and related data, you can visit the <a href="https://github.com/VitoChan1/SAKURA" target="_blank">Documentation Repository</a> [Documentation Repository](https://github.com/VitoChan1/SAKURA)
 </p>
 
 <!-- 
